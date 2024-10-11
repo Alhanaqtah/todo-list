@@ -1,0 +1,6 @@
+[submodule "todo-list-auth-microservice"]
+	path = todo-list-auth-microservice
+	url = https://github.com/Alhanaqtah/todo-list-auth-microservice.git
+[submodule "todo-list-microservice"]
+	path = todo-list-microservice
+	url = https://github.com/Alhanaqtah/todo-list-microservice.git
