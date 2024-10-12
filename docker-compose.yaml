@@ -1,0 +1,102 @@
+services:
+  auth:
+    container_name: auth
+    build:
+      context: ./todo-list-auth-microservice
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3001
+
+      - JWT_SECRET=default-secret-key
+
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=auth_db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+    
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_QUEUE=remove-user-data
+    ports:
+      - 3001:3001
+    depends_on:
+      - auth_db
+      - rabbitmq
+    networks:
+      - todo_list_net
+
+  todo:
+    container_name: todo
+    build:
+      context: ./todo-list-microservice
+      dockerfile: Dockerfile
+    environment:
+      - PORT=3000
+
+      - JWT_SECRET=default-secret-key
+
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_HOST=todo_db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=postgres
+    
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - RABBITMQ_QUEUE=remove-user-data
+    ports:
+      - 3000:3000
+    depends_on:
+      - todo_db
+      - rabbitmq
+    networks:
+      - todo_list_net
+
+  auth_db:
+    container_name: auth_db
+    image: postgres:16
+    ports:
+     - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - auth_db_volume:/var/lib/postgresql/data
+    networks:
+      - todo_list_net
+
+  todo_db:
+    container_name: todo_db
+    image: postgres:16
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - todo_db_volume:/var/lib/postgresql/data
+    networks:
+      - todo_list_net
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:4.0.2-management
+    restart: always
+    ports:
+      - 15672:15672
+    environment:
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 2147483648
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    networks:
+      - todo_list_net
+
+volumes:
+  auth_db_volume:
+  todo_db_volume:
+
+networks:
+  todo_list_net:
+    name: todo_list_net
+    driver: bridge
