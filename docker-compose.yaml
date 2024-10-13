@@ -11,7 +11,7 @@ services:
 
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=auth_db
+      - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
       - POSTGRES_DB=postgres
     
@@ -38,7 +38,7 @@ services:
 
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_HOST=todo_db
+      - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
       - POSTGRES_DB=postgres
     
@@ -53,8 +53,8 @@ services:
     networks:
       - todo_list_net
 
-  auth_db:
-    container_name: auth_db
+  database:
+    container_name: database
     image: postgres:16
     ports:
      - 5433:5432
@@ -63,19 +63,6 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - auth_db_volume:/var/lib/postgresql/data
-    networks:
-      - todo_list_net
-
-  todo_db:
-    container_name: todo_db
-    image: postgres:16
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    volumes:
-      - todo_db_volume:/var/lib/postgresql/data
     networks:
       - todo_list_net
 
