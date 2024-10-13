@@ -13,7 +13,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=auth_db
     
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -21,7 +21,7 @@ services:
     ports:
       - 3001:3001
     depends_on:
-      - auth_db
+      - database
       - rabbitmq
     networks:
       - todo_list_net
@@ -40,7 +40,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_HOST=database
       - POSTGRES_PORT=5432
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=todo_db
     
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
@@ -48,7 +48,7 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      - todo_db
+      - database
       - rabbitmq
     networks:
       - todo_list_net
@@ -62,7 +62,8 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
     volumes:
-      - auth_db_volume:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - database_volume:/var/lib/postgresql/data
     networks:
       - todo_list_net
 
@@ -80,8 +81,7 @@ services:
       - todo_list_net
 
 volumes:
-  auth_db_volume:
-  todo_db_volume:
+  database_volume:
 
 networks:
   todo_list_net:
